@@ -1,0 +1,15 @@
+{
+  "name": "ai-sakray",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Ragnarok Homunculus AI",
+  "scripts": {
+    "test": "pnpm run test:all",
+    "test:all": "pnpm run test:readjson && pnpm run test:memory && pnpm run test:try && pnpm run test:loop && pnpm run test:bt",
+    "test:readjson": "node scripts/run-lua-test.mjs USER_AI/test/readjson.lua",
+    "test:memory": "node scripts/run-lua-test.mjs USER_AI/test/memory.lua",
+    "test:try": "node scripts/run-lua-test.mjs USER_AI/test/try.lua",
+    "test:loop": "node scripts/run-lua-test.mjs USER_AI/test/loop.lua",
+    "test:bt": "node scripts/run-lua-test.mjs USER_AI/test/test_behavior_tree.lua"
+  }
+}

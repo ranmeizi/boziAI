@@ -1,0 +1,17 @@
+{
+  "memory":{
+    "state":"IDLE",
+    "cmds":[]
+  },
+  "buff_conf_enabled":false,
+  "control":{
+    "auto_attack":true
+  },
+  "tick":6,
+  "task":{
+    "persistent":true,
+    "name":"Farm"
+  },
+  "task_queue":[],
+  "version":1
+}
