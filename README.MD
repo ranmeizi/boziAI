@@ -2,8 +2,15 @@
 
 纯 Lua 生命体行为树，不依赖 AutoHotkey、地图数据或外控客户端。建议放到游戏客户端 `AI_sakray` 目录下使用：
 
+1. 进入游戏客户端下的 `AI_sakray` 目录。
+2. **先删掉该目录里原有的其它文件**（如有需要请自行备份）。
+3. 将 [boziAI](https://github.com/ranmeizi/boziAI.git) 仓库内容克隆到当前目录（`.` 即 `AI_sakray`）：
+
 ```bash
-git clone https://github.com/ranmeizi/ro-homu-ai.git AI_sakray
+cd <游戏客户端路径>/AI_sakray
+# 清空目录（示例；请按需备份后再执行）
+rm -rf ./*
+git clone https://github.com/ranmeizi/boziAI.git .
 ```
 
 ## 目录速览
