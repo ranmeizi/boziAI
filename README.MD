@@ -1,17 +1,18 @@
 # Ragnarok 生命体 AI（Homunculus）
 
-纯 Lua 生命体行为树，不依赖 AutoHotkey、地图数据或外控客户端。建议放到游戏客户端 `AI_sakray` 目录下使用：
+纯 Lua 生命体行为树，放到游戏客户端 `AI_sakray` 目录下使用：
 
-1. 进入游戏客户端下的 `AI_sakray` 目录。
-2. **先删掉该目录里原有的其它文件**（如有需要请自行备份）。
-3. 将 [boziAI](https://github.com/ranmeizi/boziAI.git) 仓库内容克隆到当前目录（`.` 即 `AI_sakray`）：
+1. 进入游戏客户端目录（与 `AI_sakray` 同级）。
+2. 若已有旧版 `AI_sakray`，先备份：把整个文件夹改名为 `AI_sakray.bak`（或在文件管理器里移走旧脚本）。
+3. 克隆 [boziAI](https://github.com/ranmeizi/boziAI.git) 为新的 `AI_sakray`：
 
 ```bash
-cd <游戏客户端路径>/AI_sakray
-# 清空目录（示例；请按需备份后再执行）
-rm -rf ./*
-git clone https://github.com/ranmeizi/boziAI.git .
+cd <游戏客户端路径>
+mv AI_sakray AI_sakray.bak   # 无旧版可跳过
+git clone https://github.com/ranmeizi/boziAI.git AI_sakray
 ```
+
+若必须保留 `AI_sakray` 目录名不变：在文件管理器中移走目录内旧文件，使目录为空后再于该目录内执行 `git clone https://github.com/ranmeizi/boziAI.git .`。
 
 ## 目录速览
 

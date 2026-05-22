@@ -1,0 +1,101 @@
+From ca7a89cb9e3ecc9650e9c07da51d27cdca2d981e Mon Sep 17 00:00:00 2001
+From: boboan <360969885@qq.com>
+Date: Fri, 22 May 2026 14:07:43 +0800
+Subject: [PATCH] =?UTF-8?q?fix:=20=E8=AF=AD=E6=B3=95bug?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../BehaviorTree/common/actions/UseSkill.lua  | 30 +++++++++++--------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
+
+diff --git a/USER_AI/BehaviorTree/common/actions/UseSkill.lua b/USER_AI/BehaviorTree/common/actions/UseSkill.lua
+index 54b77e5..e7cff80 100644
+--- a/USER_AI/BehaviorTree/common/actions/UseSkill.lua
++++ b/USER_AI/BehaviorTree/common/actions/UseSkill.lua
+@@ -1,10 +1,13 @@
+ local Logger = require('AI_sakray/USER_AI/Logger')
+ local skillbook = require('AI_sakray/USER_AI/HOMU.skill').skillbook
+ 
++---@class UseSkillModule
++local UseSkill = {}
++
+ ---@param level number|string
+ ---@param type number
+ ---@return table|nil
+-local function resolve_skill_info(level, type)
++function UseSkill.resolve_skill_info(level, type)
+     local book = skillbook[type]
+     if book == nil then
+         return nil
+@@ -15,8 +18,8 @@ end
+ ---@param level number|string
+ ---@param type number
+ ---@return number 毫秒；0 表示不写 cooldown
+-local function cooldown_ms_for(level, type)
+-    local info = resolve_skill_info(level, type)
++function UseSkill.cooldown_ms_for(level, type)
++    local info = UseSkill.resolve_skill_info(level, type)
+     if info == nil then
+         return 0
+     end
+@@ -31,14 +34,14 @@ end
+ 
+ ---@param type number
+ ---@return boolean
+-local function is_on_cooldown(type)
++function UseSkill.is_on_cooldown(type)
+     return Blackboard.cooldown:get(type) ~= nil
+ end
+ 
+ ---@param level number|string
+ ---@param type number
+-local function put_on_cooldown(level, type)
+-    local ms = cooldown_ms_for(level, type)
++function UseSkill.put_on_cooldown(level, type)
++    local ms = UseSkill.cooldown_ms_for(level, type)
+     if ms > 0 then
+         Blackboard.cooldown:set(type, true, ms)
+     end
+@@ -49,7 +52,7 @@ end
+ ---@param type number
+ ---@param target_id number
+ ---@return string NodeStates
+-local function UseSkill(level, type, target_id)
++function UseSkill.cast(level, type, target_id)
+     local attack_range = GetV(V_SKILLATTACKRANGE, Blackboard.id, type)
+     local distance = GetDistance2(Blackboard.id, target_id)
+ 
+@@ -57,21 +60,22 @@ local function UseSkill(level, type, target_id)
+         return NodeStates.FAILURE
+     end
+ 
+-    if is_on_cooldown(type) then
++    if UseSkill.is_on_cooldown(type) then
+         return NodeStates.FAILURE
+     end
+ 
+     Logger.debug('useskill type:' .. type)
+ 
+-    put_on_cooldown(level, type)
++    UseSkill.put_on_cooldown(level, type)
+     SkillObject(Blackboard.id, level, type, target_id)
+ 
+     return NodeStates.SUCCESS
+ end
+ 
+-UseSkill.resolve_skill_info = resolve_skill_info
+-UseSkill.cooldown_ms_for = cooldown_ms_for
+-UseSkill.is_on_cooldown = is_on_cooldown
+-UseSkill.put_on_cooldown = put_on_cooldown
++setmetatable(UseSkill, {
++    __call = function(_, level, type, target_id)
++        return UseSkill.cast(level, type, target_id)
++    end,
++})
+ 
+ return UseSkill
+-- 
+2.39.5 (Apple Git-154)
+
