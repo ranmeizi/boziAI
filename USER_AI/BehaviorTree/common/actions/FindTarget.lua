@@ -1,14 +1,5 @@
 local Logger = require('AI_sakray/USER_AI/Logger')
-local typeBlacklist = require('AI_sakray/USER_AI/tatget_blacklist_conf')
-local typeWhitelist = require('AI_sakray/USER_AI/tatget_whitelist_conf')
-
-local whitelistActive = false
-for _, allowed in pairs(typeWhitelist) do
-    if allowed == true then
-        whitelistActive = true
-        break
-    end
-end
+local ConfigModule = require('AI_sakray/USER_AI/ConfigModule')
 
 --- @param id number
 local function checkIgnore(id)
@@ -22,19 +13,13 @@ local function isBlacklistedType(homunType)
     if homunType == nil or homunType == 0 then
         return false
     end
-    return typeBlacklist[homunType] == true
+    return ConfigModule.is_blacklisted_type(homunType)
 end
 
 --- 白名单启用时，仅允许表内类型；未启用则一律通过
 --- @param homunType number|nil
 local function isWhitelistedType(homunType)
-    if not whitelistActive then
-        return true
-    end
-    if homunType == nil or homunType == 0 then
-        return false
-    end
-    return typeWhitelist[homunType] == true
+    return ConfigModule.is_whitelisted_type(homunType)
 end
 
 --- 是否允许参与自动寻敌（不含主人手动目标）

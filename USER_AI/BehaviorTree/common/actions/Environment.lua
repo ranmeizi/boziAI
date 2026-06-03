@@ -15,7 +15,7 @@ local function updateTargetInfoOnTable(table, id)
     local x, y = GetV(V_POSITION, id)
     table.pos.x = x
     table.pos.y = y
-    table.type = GetV(V_HOMUNTYPE, id) -- 寻敌过滤见 tatget_blacklist_conf / tatget_whitelist_conf
+    table.type = GetV(V_HOMUNTYPE, id) -- 寻敌过滤见 config.lua + ConfigModule
     table.attack_range = GetV(V_ATTACKRANGE, id)
     table.motion = GetV(V_MOTION, id)
     table.target = GetV(V_TARGET, id)
@@ -52,22 +52,24 @@ function Environment()
         local homu_type = GetV(V_HOMUNTYPE, value)
         -- 属于生命体但不是自己
         if
-            (homu_type > 0 and homu_type < 9 and value ~= Blackboard.id)
+            (homu_type > 0 and homu_type < 17 and value ~= Blackboard.id)
             or homu_type == 1579 -- 种的海葵
             or homu_type == 1555 -- 种的苗娃
         then
-            -- 找他们有没有目标
+            -- 找他们有没有活着的目标
             local target = GetV(V_TARGET, value)
-
-            if target ~= nil and target > 0 then
+            if target ~= nil and target > 0 and GetV(V_MOTION, target) ~= MOTION_DEAD then
                 Blackboard.objects.homu_safe_target:push(target)
             end
         end
     end
 
+    -- Drain 停格判定节拍（每帧 +1，供坐标静止计时）
+    Blackboard.drain_tick = (Blackboard.drain_tick or 0) + 1
+
     -- 清空仇恨列表
-    Blackboard.objects.aggroListHomu:clear()
-    Blackboard.objects.aggroListOwner:clear()
+    Blackboard.objects.aggroListHomu = Array:new()
+    Blackboard.objects.aggroListOwner = Array:new()
 
     -- 从 monster 列表里统计一下 仇恨列表
     for index, value in ipairs(Blackboard.objects.monsters) do

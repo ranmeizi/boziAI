@@ -190,7 +190,8 @@ local OptionHandlers = {
         option_tip(3, '大队模式 Drain')
         ---@type DrainTask
         local task = {
-            name = 'Drain'
+            name = 'Drain',
+            persistent = true,
         }
 
         TryJumpTask(task, { removeUniqueTask = true })

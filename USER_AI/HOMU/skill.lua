@@ -54,14 +54,57 @@ local filir_buff = { { 1, HFLI_FLEET }, { 1, HFLI_SPEED } }
 -- Lif / Amistr 为辅助系：不在行为树中续 buff、不自动施法（skillbook 仅作数据参考）
 local vanilmirth_buff = {}
 
+--- keep_buff（Environment 续 buff）所需 SP 之和
+---@param homun_type number|nil
+---@param conf table|nil 默认 buff_conf[homun_type] 或 Blackboard.buff_conf
+---@return number
+local function keep_buff_sp_reserve(homun_type, conf)
+    if conf == nil and homun_type ~= nil then
+        conf = buff_conf[homun_type]
+    end
+    if conf == nil or #conf == 0 then
+        return 0
+    end
+    local total = 0
+    for i = 1, #conf do
+        local entry = conf[i]
+        local level = entry[1]
+        local stype = entry[2]
+        local book = skillbook[stype]
+        local info = book and (book[tostring(level)] or book[level])
+        if info ~= nil and info.sp_cost ~= nil then
+            total = total + info.sp_cost
+        end
+    end
+    return total
+end
+
+---@param level number|string
+---@param skill_type number
+---@return number
+local function skill_sp_cost(level, skill_type)
+    local book = skillbook[skill_type]
+    local info = book and (book[tostring(level)] or book[level])
+    if info ~= nil and info.sp_cost ~= nil then
+        return info.sp_cost
+    end
+    return 0
+end
+
 local buff_conf = {
     [FILIR] = filir_buff,
+    [FILIR2] = filir_buff,
     [FILIR_H] = filir_buff,
+    [FILIR_H2] = filir_buff,
     [VANILMIRTH] = vanilmirth_buff,
+    [VANILMIRTH2] = vanilmirth_buff,
     [VANILMIRTH_H] = vanilmirth_buff,
+    [VANILMIRTH_H2] = vanilmirth_buff,
 }
 
 return {
     skillbook = skillbook,
     buff_conf = buff_conf,
+    keep_buff_sp_reserve = keep_buff_sp_reserve,
+    skill_sp_cost = skill_sp_cost,
 }

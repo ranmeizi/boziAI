@@ -15,7 +15,9 @@ local json = require('AI_sakray/USER_AI.libs/dkjson')
   仅更新快照不写盘：
     Memory.dehydrateFromBlackboard()
 
-  任务是否参与持久化：task.persistent == true（例如 Farm、Grind）。未标记或 false 的当前任务与队列项均不写入 / 读盘时忽略。
+  任务是否参与持久化：task.persistent == true（例如 Farm、Grind、Drain）。未标记或 false 的当前任务与队列项均不写入 / 读盘时忽略。
+
+  drain_touched_at：Drain 月光冷却 { id, at }[]，5 秒内同 id 不重复施法（仅存仍在冷却中的项）。
 ]]
 
 local filePath = 'AI_sakray/memory.json'
@@ -25,6 +27,8 @@ local filePath = 'AI_sakray/memory.json'
 ---@field buff_conf_enabled boolean
 ---@field task table|nil
 ---@field task_queue table[]
+---@field drain_touched_at { id: number, at: number }[]
+---@field drain_touched_ids number[]|nil @deprecated 旧格式，hydrate 仍可读
 
 Memory = Memory or {}
 
@@ -36,6 +40,7 @@ Memory.persist = Memory.persist or {
     buff_conf_enabled = false,
     task = nil,
     task_queue = {},
+    drain_touched_at = {},
 }
 
 ---@param task table|nil
@@ -98,6 +103,10 @@ function Memory.dehydrateFromBlackboard(bb)
     end
     p.task_queue = queue
 
+    local Drain = require('AI_sakray/USER_AI/BehaviorTree/common/task/Drain')
+    p.drain_touched_at = Drain.exportTouchedIds()
+    p.drain_touched_ids = nil
+
     -- 旧版 JSON 可能含这两项，脱水后清掉以免下次 store 再写进去
     p.ignore_cache = nil
     p.black_list_cache = nil  -- 旧字段，脱水时一并清掉
@@ -133,6 +142,13 @@ function Memory.hydrateToBlackboard(bb)
     end
 
     bb.task = shouldPersistTask(p.task) and shallowCloneTask(p.task) or nil
+
+    local Drain = require('AI_sakray/USER_AI/BehaviorTree/common/task/Drain')
+    Drain.hydrateTouchedIds(p.drain_touched_at or p.drain_touched_ids)
+
+    if bb.task == nil and rawget(_G, 'promoteTaskFromQueue') then
+        promoteTaskFromQueue()
+    end
 end
 
 --- 读盘：JSON 合并进 Memory.persist（整文件即 persist 载荷，便于扩展测试字段）

@@ -8,6 +8,7 @@ require('AI_sakray/USER_AI/BehaviorTree/Core/init')
 
 local HomuTrees = require('AI_sakray/USER_AI/HOMU/trees')
 local FindTarget = require('AI_sakray/USER_AI/BehaviorTree/common/actions/FindTarget')
+local ConfigModule = require('AI_sakray.USER_AI.ConfigModule')
 
 -- 全局黑板
 Blackboard = {
@@ -45,6 +46,9 @@ Blackboard = {
 
     -- 保持增益buff的配置项 (由 Option2 开启/关闭，或是由task开启/关闭)
     buff_conf = nil,
+
+    --- Drain 低蓝休息（SP 滞回；见 Drain.lua）
+    drain_resting = false,
 
     -- 调用 Environment 记录 objects , 后面可以用外置应用读出来
     objects = {
@@ -119,6 +123,8 @@ Blackboard = {
 require('AI_sakray/USER_AI/Memory')
 Memory.load()
 
+ConfigModule.init()
+
 -- 每次脚本重载只水合一次（需先有 GetV 的 id/type）
 local memoryHydrated = false
 
@@ -158,17 +164,22 @@ local function loop(id)
     Logger.debug('AI loop start')
 
 
-    if Blackboard.is_init then
+    if Blackboard.is_init ~= true then
         Logger.info('INIT')
-
         Blackboard.is_init = true
     end
 
-
     -- 记录id
+    local prev_homu_id = Blackboard._homu_id
     Blackboard.id = id
     Blackboard.owner_id = GetV(V_OWNER, id)
     Blackboard.type = GetV(V_HOMUNTYPE, id)
+
+    if prev_homu_id ~= nil and prev_homu_id ~= id then
+        on_homunculus_id_changed(prev_homu_id, id)
+        promoteTaskFromQueue()
+    end
+    Blackboard._homu_id = id
 
     if not memoryHydrated then
         Memory.hydrateToBlackboard()

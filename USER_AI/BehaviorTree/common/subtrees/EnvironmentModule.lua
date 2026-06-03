@@ -21,6 +21,11 @@ local EnvironmentSubTree = Sequence:new({
                 for index, value in ipairs(conf) do
                     local level = value[1]
                     local type = value[2]
+                    local target_key = value[3]
+                    local target_id = Blackboard.id
+                    if target_key == 'owner' and Blackboard.owner_id ~= nil then
+                        target_id = Blackboard.owner_id
+                    end
 
                     if not UseSkill.is_on_cooldown(type) then
                         ---@type UseSkillTask
@@ -28,7 +33,7 @@ local EnvironmentSubTree = Sequence:new({
                             name = 'UseSkill',
                             level = level,
                             type = type,
-                            target_id = Blackboard.id,
+                            target_id = target_id,
                         }
 
                         TryJumpTask(task, {})

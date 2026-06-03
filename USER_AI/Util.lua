@@ -66,6 +66,48 @@ function TryJumpTask(task, options)
 	return NodeStates.SUCCESS
 end
 
+--- 当前无 task 时从队列取出 persistent 任务（如 Grind/Farm/Drain）
+---@return boolean promoted
+function promoteTaskFromQueue()
+	if Blackboard.task ~= nil then
+		return false
+	end
+	if Blackboard.task_queue == nil or Blackboard.task_queue:len() == 0 then
+		return false
+	end
+	Blackboard.task = Blackboard.task_queue:shift()
+	Logger.info('[AI] promote task from queue: ' .. tostring(Blackboard.task.name))
+	return true
+end
+
+---@param task table|nil
+local function reset_kill_task_runtime(task)
+	if task == nil then
+		return
+	end
+	if task.name ~= 'Kill' then
+		return
+	end
+	task._hasFirstAttack = nil
+	task._skillOnWay = nil
+end
+
+--- 生命体重新召唤（id 变化）时清 Kill 临时状态
+---@param old_id number
+---@param new_id number
+function on_homunculus_id_changed(old_id, new_id)
+	Logger.info(string.format(
+		'[AI] homunculus id changed %s -> %s',
+		tostring(old_id), tostring(new_id)
+	))
+	reset_kill_task_runtime(Blackboard.task)
+	if Blackboard.task_queue ~= nil then
+		for _, t in Blackboard.task_queue:ipairs() do
+			reset_kill_task_runtime(t)
+		end
+	end
+end
+
 -- 是否经历了 X 秒
 ---@param sec number
 function PerXSecond(sec)

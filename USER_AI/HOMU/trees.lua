@@ -12,13 +12,21 @@ local Trees = {}
 ---@type table<number, table>
 Trees.by_type = {
     [FILIR] = FilirBT,
+    [FILIR2] = FilirBT,
     [FILIR_H] = FilirBT,
+    [FILIR_H2] = FilirBT,
     [LIF] = LifBT,
+    [LIF2] = LifBT,
     [LIF_H] = LifBT,
+    [LIF_H2] = LifBT,
     [AMISTR] = AmistrBT,
+    [AMISTR2] = AmistrBT,
     [AMISTR_H] = AmistrBT,
+    [AMISTR_H2] = AmistrBT,
     [VANILMIRTH] = VanilmirthBT,
+    [VANILMIRTH2] = VanilmirthBT,
     [VANILMIRTH_H] = VanilmirthBT,
+    [VANILMIRTH_H2] = VanilmirthBT,
 }
 
 Trees.default = FilirBT

@@ -33,7 +33,10 @@ end
 
 --- @param task KillTask
 function M.action_move_to(task)
-    return MoveTo({ target_id = task.target_id })
+    return MoveTo({
+        target_id = task.target_id,
+        kill_extension = true,
+    })
 end
 
 function M.make_giveupable_moveto()
@@ -54,12 +57,12 @@ function M.make_giveupable_moveto()
     })
 end
 
---- 普攻 + 追击（非特化系默认）
+--- 走打：先普攻（失败也继续），再追击 / 绕目标移动
 function M.make_default_strategy()
     local giveupable_moveto = M.make_giveupable_moveto()
     return Succeeder:new(
         Sequence:new({
-            Inverter:new(ActionNode:new(Task.withTask(M.action_attack))),
+            Succeeder:new(ActionNode:new(Task.withTask(M.action_attack))),
             giveupable_moveto,
         })
     )

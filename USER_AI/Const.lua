@@ -22,15 +22,30 @@ V_MAXSP = 11           -- The maximum SP of a Homunculus or its owner
 
 
 --------------------------
---- V_MOTION
+--- V_MOTION（GetV(V_MOTION, id)）
 --------------------------
-MOTION_STAND = 0    -- Standing
-MOTION_MOVE = 1     -- Movement
-MOTION_ATTACK = 2   -- Attack
-MOTION_DEAD = 3     -- Dead
-MOTION_BENDDOWN = 5 -- Pick up item, set trap
-MOTION_SIT = 6      -- Sitting down
-MOTION_ATTACK2 = 9  -- Attack
+MOTION_STAND = 0       -- Standing
+MOTION_MOVE = 1        -- Movement
+MOTION_ATTACK = 2      -- Attack
+MOTION_DEAD = 3        -- Dead
+MOTION_DAMAGE = 4      -- Taking damage
+MOTION_BENDDOWN = 5    -- Pick up item, set trap
+MOTION_SIT = 6         -- Sitting down
+MOTION_SKILL = 7       -- Used a skill
+MOTION_CASTING = 8     -- Casting a skill
+MOTION_ATTACK2 = 9     -- Attack
+MOTION_TOSS = 12       -- Toss (spear boomerang / aid potion)
+MOTION_COUNTER = 13    -- Counter-attack
+MOTION_PERFORM = 16    -- Performance
+MOTION_PERFORM2 = 17   -- Performance
+MOTION_JUMP_UP = 19    -- TaeKwon Kid Leap — rising
+MOTION_JUMP_FALL = 20  -- TaeKwon Kid Leap — falling
+MOTION_SOULLINK = 23   -- Soul linker link skill
+MOTION_TUMBLE = 25     -- Tumbling / TK Kid Leap landing
+MOTION_BIGTOSS = 28    -- Heavier toss (slim / acid demo)
+MOTION_DESPERADO = 38  -- Desperado
+MOTION_XXXXXX = 39     -- Unknown
+MOTION_FULLBLAST = 42  -- Full Blast
 --------------------------
 
 
@@ -38,14 +53,22 @@ MOTION_ATTACK2 = 9  -- Attack
 -- V_HOMUNTYPE
 --------------------------------------------
 
-LIF = 1          -- Lif
-AMISTR = 2       -- Amistr
-FILIR = 3        -- Filir
-VANILMIRTH = 4   -- Vanilmirth
-LIF_H = 5        -- Advanced Lif
-AMISTR_H = 6     -- Advanced Amistr
-FILIR_H = 7      -- Advanced Filir
-VANILMIRTH_H = 8 -- Advanced Vanilmirth
+LIF = 1              -- Lif
+AMISTR = 2           -- Amistr
+FILIR = 3            -- Filir
+VANILMIRTH = 4       -- Vanilmirth
+LIF2 = 5
+AMISTR2 = 6
+FILIR2 = 7
+VANILMIRTH2 = 8
+LIF_H = 9            -- Advanced Lif
+AMISTR_H = 10        -- Advanced Amistr
+FILIR_H = 11         -- Advanced Filir
+VANILMIRTH_H = 12    -- Advanced Vanilmirth
+LIF_H2 = 13
+AMISTR_H2 = 14
+FILIR_H2 = 15
+VANILMIRTH_H2 = 16
 
 --------------------------------------------
 
