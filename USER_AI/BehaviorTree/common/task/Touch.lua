@@ -1,9 +1,18 @@
 --[[
-    Touch：对目标施放一次月光，并将其 id 记入「攻击敌人」表，供 Drain 与其它逻辑过滤。
+    Touch：对目标施放一次 Drain 策略对应技能，并登记触摸冷却。
 ]]
 
 local UseSkill = require('AI_sakray/USER_AI/BehaviorTree/common/actions/UseSkill')
-local Drain = require 'AI_sakray.USER_AI.BehaviorTree.common.task.Drain'
+local Drain = require('AI_sakray/USER_AI/BehaviorTree/common/task/Drain')
+local Registry = require('AI_sakray/USER_AI/HOMU/drain/registry')
+
+local function resolve_skill_level(strategy)
+    local lv = strategy.skill_level
+    if type(lv) == 'function' then
+        return lv()
+    end
+    return lv or 1
+end
 
 return Task:new(
     RunningOrNot:new(
@@ -13,10 +22,11 @@ return Task:new(
                 return NodeStates.FAILURE
             end
 
-            UseSkill(1, HFLI_MOON, task.target_id)
+            local strategy = Registry.get_strategy_for_blackboard()
+            local level = resolve_skill_level(strategy)
+            UseSkill(level, strategy.skill_type, task.target_id)
             Drain.touchRegistry.mark(task.target_id)
 
-            -- 与 UseSkillTask 相同：立刻结束当前 Task，让队列里的 Drain 继续
             return NodeStates.FAILURE
         end)
     )

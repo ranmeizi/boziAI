@@ -22,4 +22,14 @@ return {
         skill_entry_casts = 10,
         moon_blacklist = {},
     },
+
+    -- Filir Drain（moon_level 省略则沿用 filir_kill.moon_level）
+    filir_drain = {},
+
+    -- Vanilmirth Drain：混乱等级；target_blacklist 为 V_HOMUNTYPE 不点名
+    vanilmirth_drain = {
+        skill_level = 1,
+        still_delay_ms = 1000,
+        target_blacklist = {},
+    },
 }

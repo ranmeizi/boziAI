@@ -52,10 +52,32 @@ local function filir_kill_cfg()
     return cfg
 end
 
+---@return table
+local function filir_drain_cfg()
+    local cfg = userConfig.filir_drain
+    if type(cfg) ~= 'table' then
+        return {}
+    end
+    return cfg
+end
+
+---@return table
+local function vanilmirth_drain_cfg()
+    local cfg = userConfig.vanilmirth_drain
+    if type(cfg) ~= 'table' then
+        return {}
+    end
+    return cfg
+end
+
+---@type table<number, boolean>
+local vanilmirthDrainBlacklist = {}
+
 function M.init()
     effectiveBlacklist = copyBoolMap(userConfig.target_blacklist)
     effectiveWhitelist = copyBoolMap(userConfig.target_whitelist)
     effectiveFilirMoonBlacklist = copyBoolMap(filir_kill_cfg().moon_blacklist)
+    vanilmirthDrainBlacklist = copyBoolMap(vanilmirth_drain_cfg().target_blacklist)
     recomputeWhitelistActive()
     Logger.info('[ConfigModule] init OK')
 end
@@ -133,6 +155,55 @@ end
 ---@return boolean
 function M.attack_dance_enabled()
     return userConfig.attack_dance == true
+end
+
+--- Filir Drain 月光等级（未配置则沿用 filir_kill.moon_level）
+---@return number
+function M.filir_drain_moon_level()
+    local cfg = filir_drain_cfg()
+    local lv = cfg.moon_level
+    if lv ~= nil and lv > 0 then
+        return lv
+    end
+    return M.filir_kill_moon_level()
+end
+
+--- Vanilmirth Drain 停格等待（毫秒）
+---@return number
+function M.vanilmirth_drain_still_delay_ms()
+    local cfg = vanilmirth_drain_cfg()
+    local ms = cfg.still_delay_ms
+    if ms == nil or ms <= 0 then
+        return 1000
+    end
+    return ms
+end
+
+--- Vanilmirth Drain 混乱等级
+---@return number
+function M.vanilmirth_drain_skill_level()
+    local cfg = vanilmirth_drain_cfg()
+    local lv = cfg.skill_level
+    if lv == nil or lv <= 0 then
+        return 1
+    end
+    return lv
+end
+
+---@param monster table|nil
+---@param mid number|nil
+---@return boolean
+function M.is_vanilmirth_drain_target_eligible(monster, mid)
+    local homunType = nil
+    if monster ~= nil and monster.type ~= nil and monster.type ~= 0 then
+        homunType = monster.type
+    elseif mid ~= nil then
+        homunType = GetV(V_HOMUNTYPE, mid)
+    end
+    if homunType == nil or homunType == 0 then
+        return true
+    end
+    return vanilmirthDrainBlacklist[homunType] ~= true
 end
 
 return M
